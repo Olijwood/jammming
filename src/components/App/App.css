@@ -50,3 +50,25 @@ h2 {
     flex-direction: column;
   }
 }
+
+/* Existing styles */
+
+.App-playlist {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Add styles for the new components */
+.PlaylistList {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.PlaylistListItem {
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  text-align: center;
+  background-color: #f9f9f9;
+}

@@ -1,15 +1,24 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import "./App.css";
 
 import Playlist from "../Playlist/Playlist";
 import SearchBar from "../SearchBar/SearchBar";
 import SearchResults from "../SearchResults/SearchResults";
+import PlaylistList from "../PlaylistList/PlaylistList";
 import Spotify from "../../util/Spotify";
 
 const App = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [playlistName, setPlaylistName] = useState("New Playlist");
   const [playlistTracks, setPlaylistTracks] = useState([]);
+  const [userPlaylists, setUserPlaylists] = useState([]);
+  const [userId, setUserId] = useState("");
+
+  useEffect(() => {
+    Spotify.getCurrentUserId().then(setUserId);
+    Spotify.getUserPlaylists().then(setUserPlaylists);
+  }, []);
+
 
   const search = useCallback((term) => {
     Spotify.search(term).then(setSearchResults);
@@ -43,11 +52,13 @@ const App = () => {
     });
   }, [playlistName, playlistTracks]);
 
+
   return (
     <div>
       <h1>
         Ja<span className="highlight">mmm</span>ing
       </h1>
+      {userId && <h2>User ID: {userId}</h2>}
       <div className="App">
         <SearchBar onSearch={search} />
         <div className="App-playlist">
@@ -59,6 +70,7 @@ const App = () => {
             onRemove={removeTrack}
             onSave={savePlaylist}
           />
+          <PlaylistList playlists={userPlaylists} />
         </div>
       </div>
     </div>

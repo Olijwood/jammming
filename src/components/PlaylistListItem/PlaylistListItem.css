@@ -1,0 +1,9 @@
+.PlaylistListItem {
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    text-align: center;
+    background-color: #f9f9f9;
+    color: black;
+  }
+  

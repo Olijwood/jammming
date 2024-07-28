@@ -1,6 +1,7 @@
 const clientId = '5e938d94c1f14e8b84032176f5a3bc56'; // Insert client ID here.
 const redirectUri = 'http://localhost:3000/'; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
 let accessToken;
+let userId;
 
 const Spotify = {
   getAccessToken() {
@@ -20,6 +21,22 @@ const Spotify = {
       const accessUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUri}`;
       window.location = accessUrl;
     }
+  },
+
+  getCurrentUserId() {
+    if (userId) {
+      return Promise.resolve(userId);
+    }
+
+    const accessToken = this.getAccessToken();
+    const headers = { Authorization: `Bearer ${accessToken}` };
+
+    return fetch('https://api.spotify.com/v1/me', { headers: headers })
+      .then(response => response.json())
+      .then(jsonResponse => {
+        userId = jsonResponse.id;
+        return userId;
+      });
   },
 
   search(term) {
@@ -51,12 +68,9 @@ const Spotify = {
 
     const accessToken = Spotify.getAccessToken();
     const headers = { Authorization: `Bearer ${accessToken}` };
-    let userId;
 
-    return fetch('https://api.spotify.com/v1/me', {headers: headers}
-    ).then(response => response.json()
-    ).then(jsonResponse => {
-      userId = jsonResponse.id;
+    return this.getCurrentUserId().then(
+      userId => {
       return fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
         headers: headers,
         method: 'POST',
@@ -71,7 +85,25 @@ const Spotify = {
         });
       });
     });
+  },
+
+  getUserPlaylists() {
+    const accessToken = Spotify.getAccessToken();
+    const headers = { Authorization: `Bearer ${accessToken}` };
+  
+    return this.getCurrentUserId()
+      .then(userId => {
+        return fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, { headers: headers })
+          .then(response => response.json())
+          .then(jsonResponse => {
+            return jsonResponse.items.map(playlist => ({
+              id: playlist.id,
+              name: playlist.name
+            }));
+          });
+      });
   }
 };
+
 
 export default Spotify;
