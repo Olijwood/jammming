@@ -13,6 +13,7 @@ const App = () => {
   const [playlistTracks, setPlaylistTracks] = useState([]);
   const [userPlaylists, setUserPlaylists] = useState([]);
   const [userId, setUserId] = useState("");
+  const [playlistId, setPlaylistId] = useState(null);
 
   useEffect(() => {
     Spotify.getCurrentUserId().then(setUserId);
@@ -46,11 +47,12 @@ const App = () => {
 
   const savePlaylist = useCallback(() => {
     const trackUris = playlistTracks.map((track) => track.uri);
-    Spotify.savePlaylist(playlistName, trackUris).then(() => {
+    Spotify.savePlaylist(playlistName, trackUris, playlistId).then(() => {
       setPlaylistName("New Playlist");
       setPlaylistTracks([]);
+      setPlaylistId(null);
     });
-  }, [playlistName, playlistTracks]);
+  }, [playlistName, playlistTracks, playlistId]);
 
   const selectPlaylist = useCallback((id) => {
     Spotify.getPlaylist(id).then(tracks => {
@@ -58,6 +60,7 @@ const App = () => {
       if (selectedPlaylist) {
         setPlaylistName(selectedPlaylist.name);
         setPlaylistTracks(tracks);
+        setPlaylistId(id);
       }
     }).catch(error => {
       console.error('Error selecting playlist:', error);
