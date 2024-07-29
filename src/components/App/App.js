@@ -52,6 +52,13 @@ const App = () => {
     });
   }, [playlistName, playlistTracks]);
 
+  const selectPlaylist = useCallback((id) => {
+    Spotify.getPlaylist(id).then((tracks) => {
+      const selectedPlaylist = userPlaylists.find((playlist) => playlist.id === id);
+      setPlaylistName(selectedPlaylist.name);
+      setPlaylistTracks(tracks);
+    });
+  }, [userPlaylists]);
 
   return (
     <div>
@@ -70,7 +77,7 @@ const App = () => {
             onRemove={removeTrack}
             onSave={savePlaylist}
           />
-          <PlaylistList playlists={userPlaylists} />
+          <PlaylistList playlists={userPlaylists} onSelect={selectPlaylist} />
         </div>
       </div>
     </div>
