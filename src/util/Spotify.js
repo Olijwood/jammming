@@ -102,6 +102,26 @@ const Spotify = {
             }));
           });
       });
+  },
+
+  getPlaylist(playlistId) {
+    const accessToken = this.getAccessToken();
+    const headers = { Authorization: `Bearer ${accessToken}` };
+
+    return this.getCurrentUserId()
+      .then(userId => {
+        return fetch(`https://api.spotify.com/v1/users/${userId}/playlists/${playlistId}/tracks`, { headers: headers })
+          .then(response => response.json())
+          .then(jsonResponse => {
+            return jsonResponse.items.map(item => ({
+              id: item.track.id,
+              name: item.track.name,
+              artist: item.track.artists[0].name,
+              album: item.track.album.name,
+              uri: item.track.uri
+            }));
+          });
+      });
   }
 };
 
