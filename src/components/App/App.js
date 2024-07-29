@@ -20,15 +20,13 @@ const App = () => {
     Spotify.getUserPlaylists().then(setUserPlaylists);
   }, []);
 
-
   const search = useCallback((term) => {
     Spotify.search(term).then(setSearchResults);
   }, []);
 
   const addTrack = useCallback(
     (track) => {
-      if (playlistTracks.some((savedTrack) => savedTrack.id === track.id))
-        return;
+      if (playlistTracks.some((savedTrack) => savedTrack.id === track.id)) return;
 
       setPlaylistTracks((prevTracks) => [...prevTracks, track]);
     },
@@ -55,18 +53,15 @@ const App = () => {
   }, [playlistName, playlistTracks, playlistId]);
 
   const selectPlaylist = useCallback((id) => {
-    Spotify.getPlaylist(id).then(tracks => {
-      const selectedPlaylist = userPlaylists.find(playlist => playlist.id === id);
-      if (selectedPlaylist) {
-        setPlaylistName(selectedPlaylist.name);
-        setPlaylistTracks(tracks);
-        setPlaylistId(id);
-      }
-    }).catch(error => {
+    Spotify.getPlaylist(id).then((tracks) => {
+      const selectedPlaylist = userPlaylists.find((playlist) => playlist.id === id);
+      setPlaylistName(selectedPlaylist.name); // Set the name of the selected playlist
+      setPlaylistTracks(tracks);
+      setPlaylistId(id); // Set the selected playlist's ID
+    }).catch((error) => {
       console.error('Error selecting playlist:', error);
     });
   }, [userPlaylists]);
-
 
   return (
     <div>
