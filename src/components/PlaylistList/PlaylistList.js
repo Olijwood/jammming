@@ -8,8 +8,7 @@ const PlaylistList = ({ playlists, onSelect }) => {
       {playlists.map(playlist => (
         <PlaylistListItem 
           key={playlist.id}
-          id={playlist.id} 
-          name={playlist.name} 
+          playlist={playlist}
           onSelect={onSelect} />
       ))}
     </div>

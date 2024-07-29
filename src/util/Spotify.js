@@ -78,7 +78,7 @@ const Spotify = {
       }).then(response => response.json()
       ).then(jsonResponse => {
         const playlistId = jsonResponse.id;
-        return fetch(`https://api.spotify.com/v1/users/${userId}/playlists/${playlistId}/tracks`, {
+        return fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
           headers: headers,
           method: 'POST',
           body: JSON.stringify({uris: trackUris})
@@ -90,7 +90,7 @@ const Spotify = {
   getUserPlaylists() {
     const accessToken = Spotify.getAccessToken();
     const headers = { Authorization: `Bearer ${accessToken}` };
-  
+
     return this.getCurrentUserId()
       .then(userId => {
         return fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, { headers: headers })
@@ -108,11 +108,23 @@ const Spotify = {
     const accessToken = this.getAccessToken();
     const headers = { Authorization: `Bearer ${accessToken}` };
 
+    console.log(`Fetching playlist with ID: ${playlistId}`);
+
     return this.getCurrentUserId()
       .then(userId => {
-        return fetch(`https://api.spotify.com/v1/users/${userId}/playlists/${playlistId}/tracks`, { headers: headers })
-          .then(response => response.json())
+        console.log(`User ID: ${userId}`);
+        const url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
+        console.log(`Fetching URL: ${url}`);
+
+        return fetch(url, { headers: headers })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
           .then(jsonResponse => {
+            console.log('Fetched playlist tracks:', jsonResponse);
             return jsonResponse.items.map(item => ({
               id: item.track.id,
               name: item.track.name,
@@ -121,9 +133,10 @@ const Spotify = {
               uri: item.track.uri
             }));
           });
+      }).catch(error => {
+        console.error('Error fetching playlist:', error);
       });
   }
 };
-
 
 export default Spotify;

@@ -53,12 +53,17 @@ const App = () => {
   }, [playlistName, playlistTracks]);
 
   const selectPlaylist = useCallback((id) => {
-    Spotify.getPlaylist(id).then((tracks) => {
-      const selectedPlaylist = userPlaylists.find((playlist) => playlist.id === id);
-      setPlaylistName(selectedPlaylist.name);
-      setPlaylistTracks(tracks);
+    Spotify.getPlaylist(id).then(tracks => {
+      const selectedPlaylist = userPlaylists.find(playlist => playlist.id === id);
+      if (selectedPlaylist) {
+        setPlaylistName(selectedPlaylist.name);
+        setPlaylistTracks(tracks);
+      }
+    }).catch(error => {
+      console.error('Error selecting playlist:', error);
     });
   }, [userPlaylists]);
+
 
   return (
     <div>
